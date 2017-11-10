@@ -7,6 +7,7 @@ import (
 	"../lexer"
 	//"../token"
 	"../parser"
+	"../evaluator"
 )
 
 const MONKEY_FACE = `
@@ -15,6 +16,7 @@ const MONKEY_FACE = `
 
 
 const PROMPT = ">> "
+
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
@@ -32,10 +34,14 @@ func Start(in io.Reader, out io.Writer) {
 			printParserErrors(out, p.Errors())
 			continue
 		}
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 	}
 }
+
 func printParserErrors(out io.Writer, errors []string) {
 	io.WriteString(out, MONKEY_FACE)
 	io.WriteString(out, "Woops! We ran into some monkey business here!\n")

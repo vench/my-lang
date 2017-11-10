@@ -20,6 +20,8 @@ const (
 	CALL // myFunction(X)
 )
 
+var showEnteringLeaving = false
+
 var precedences = map[token.TokenType]int{
 	token.EQ: EQUALS,
 	token.NOT_EQ: EQUALS,
@@ -388,7 +390,14 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 // util
 
 func trace(s string) string  {
-	fmt.Println("entering:", s)
+	if showEnteringLeaving {
+		fmt.Println("entering:", s)
+	}
 	return s
 }
-func untrace(s string) { fmt.Println("leaving:", s) }
+
+func untrace(s string) {
+	if showEnteringLeaving {
+		fmt.Println("leaving:", s)
+	}
+}
