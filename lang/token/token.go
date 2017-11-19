@@ -24,6 +24,8 @@ const (
 	IF = "IF"
 	ELSE = "ELSE"
 	RETURN = "RETURN"
+	SETS = "SET"
+
 	// Operators
 	ASSIGN = "="
 	PLUS = "+"
@@ -39,6 +41,9 @@ const (
 	LBRACKET = "["
 	RBRACKET = "]"
 	COLON = ":"
+	BINARY_OR = "|"
+	BINARY_AND = "&"
+
 )
 
 
@@ -60,6 +65,8 @@ var keywords = map[string]TokenType{
 	"if": IF,
 	"else": ELSE,
 	"return": RETURN,
+	"set": SETS,
+	"S": SETS,
 }
 
 func LookupIdent(ident string) TokenType {

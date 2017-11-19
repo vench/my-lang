@@ -21,6 +21,7 @@ const (
 	BUILTIN_OBJ = "BUILTIN"
 	ARRAY_OBJ = "ARRAY"
 	HASH_OBJ = "HASH"
+	SETS_OBJ = "SETS"
 )
 
 type Object interface {
@@ -195,7 +196,7 @@ func (h *Hash) Inspect() string {
 		pairs = append(pairs, fmt.Sprintf("%s: %s",
 			pair.Key.Inspect(), pair.Value.Inspect()))
 	}
-	out.WriteString("{")
+	out.WriteString("Sets {")
 	out.WriteString(strings.Join(pairs, ", "))
 	out.WriteString("}")
 	return out.String()
@@ -203,4 +204,23 @@ func (h *Hash) Inspect() string {
 
 type Hashable interface {
 	HashKey() HashKey
+}
+
+//Sets
+type Sets struct {
+	Elements []Object
+}
+
+func (ao *Sets) Type() ObjectType { return SETS_OBJ }
+
+func (ao *Sets) Inspect() string {
+	var out bytes.Buffer
+	elements := []string{}
+	for _, e := range ao.Elements {
+		elements = append(elements, e.Inspect())
+	}
+	out.WriteString("Sets {")
+	out.WriteString(strings.Join(elements, ", "))
+	out.WriteString("}")
+	return out.String()
 }

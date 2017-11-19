@@ -26,6 +26,9 @@ return false;
 "foo bar"
 [1, 2];
 {"foo": "bar"}
+set{1, 2, 4}
+set{1, 2, 4} | set{1, 2, 4}
+set{1, 2, 4} & set{1, 2, 4}
 `
 
 	tests := []struct {
@@ -127,6 +130,53 @@ return false;
 		{token.COLON, ":"},
 		{token.STRING, "bar"},
 		{token.RBRACE, "}"},
+
+		{token.SETS, "set"},
+		{token.LBRACE, "{"},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.COMMA, ","},
+		{token.INT, "4"},
+		{token.RBRACE, "}"},
+
+		//
+		{token.SETS, "set"},
+		{token.LBRACE, "{"},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.COMMA, ","},
+		{token.INT, "4"},
+		{token.RBRACE, "}"},
+		{token.BINARY_OR, "|"},
+		{token.SETS, "set"},
+		{token.LBRACE, "{"},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.COMMA, ","},
+		{token.INT, "4"},
+		{token.RBRACE, "}"},
+		//
+		{token.SETS, "set"},
+		{token.LBRACE, "{"},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.COMMA, ","},
+		{token.INT, "4"},
+		{token.RBRACE, "}"},
+		{token.BINARY_AND, "&"},
+		{token.SETS, "set"},
+		{token.LBRACE, "{"},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.COMMA, ","},
+		{token.INT, "4"},
+		{token.RBRACE, "}"},
+
 		{token.EOF, ""},
 
 

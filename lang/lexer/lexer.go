@@ -45,6 +45,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.PLUS, l.ch)
 	case '-':
 		tok = newToken(token.MINUS, l.ch)
+	case '|':
+		tok = newToken(token.BINARY_OR, l.ch)
+	case '&':
+		tok = newToken(token.BINARY_AND, l.ch)
 	case '!':
 		if l.peekChar() == '=' {
 			ch := l.ch
@@ -82,6 +86,7 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.RBRACKET, l.ch)
 	case ':':
 		tok = newToken(token.COLON, l.ch)
+
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
