@@ -37,6 +37,7 @@ var precedences = map[token.TokenType]int{
 	token.LBRACKET: INDEX,
 	token.BINARY_OR: SUM,
 	token.BINARY_AND: SUM,
+	token.BINARY_SLASH : SUM,
 }
 
 type (
@@ -70,6 +71,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.BINARY_AND, p.parseInfixExpression)
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
 	p.registerInfix(token.SLASH, p.parseInfixExpression)
+	p.registerInfix(token.BINARY_SLASH, p.parseInfixExpression)
 	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
 	p.registerInfix(token.EQ, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)

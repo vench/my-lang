@@ -16,9 +16,14 @@ func evalSetsInfixExpression(operator string,
 			&right.(*object.Sets).Elements,
 		)}
 	case "&":
-		return &object.Sets{Elements: *crosSets(
+		return &object.Sets{Elements: *crossSets(
 		&left.(*object.Sets).Elements,
 		&right.(*object.Sets).Elements,
+		)}
+	case "\\":
+		return &object.Sets{Elements: *diffSets(
+			&left.(*object.Sets).Elements,
+			&right.(*object.Sets).Elements,
 		)}
 
 	}
@@ -39,7 +44,7 @@ func unionSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 	return  elements
 }
 
-func crosSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
+func crossSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 	has := make(map[string]int)
 	elements := new([]object.Object)
 	for _, element := range append(*a, *b...) {
@@ -52,11 +57,23 @@ func crosSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 	return  elements
 }
 
-/*
-func inArray(val string, b *[]object.Object) bool {
-	for _, v := range *b {
-		if v.Inspect() == val {
-			return  true
+func diffSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
+
+	elements := new([]object.Object)
+	for _, element := range *a {
+		has := false
+		for _, elementB := range *b {
+			if element.Inspect() == elementB.Inspect() {
+				has = true
+				break
+			}
 		}
+
+		if !has {
+			*elements = append(*elements, element)
+		}
+
 	}
-}*/
+
+	return  elements
+}

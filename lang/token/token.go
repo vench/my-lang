@@ -33,6 +33,7 @@ const (
 	BANG = "!"
 	ASTERISK = "*"
 	SLASH = "/"
+	BINARY_SLASH = "\\"
 	LT = "<"
 	GT = ">"
 	EQ= "=="

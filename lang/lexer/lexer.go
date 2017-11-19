@@ -47,6 +47,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.MINUS, l.ch)
 	case '|':
 		tok = newToken(token.BINARY_OR, l.ch)
+	case '\\':
+		tok = newToken(token.BINARY_SLASH, l.ch)
 	case '&':
 		tok = newToken(token.BINARY_AND, l.ch)
 	case '!':
