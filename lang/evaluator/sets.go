@@ -25,6 +25,11 @@ func evalSetsInfixExpression(operator string,
 			&left.(*object.Sets).Elements,
 			&right.(*object.Sets).Elements,
 		)}
+	case "*":
+		return &object.Sets{Elements: *multSets(
+			&left.(*object.Sets).Elements,
+			&right.(*object.Sets).Elements,
+		)}
 
 	}
 
@@ -71,6 +76,23 @@ func diffSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 
 		if !has {
 			*elements = append(*elements, element)
+		}
+
+	}
+
+	return  elements
+}
+
+
+func multSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
+	elements := new([]object.Object)
+	for _, ea := range *a {
+		for _, eb := range *b {
+
+			data := new([]object.Object)
+			*data = append(*data, ea, eb)
+
+			*elements = append(*elements, &object.Sets{*data })
 		}
 
 	}
