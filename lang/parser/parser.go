@@ -90,7 +90,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 
 	p.registerPrefix(token.SETS, p.parseSetsLiteral)
-	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
+	p.registerPrefix(token.LBRACE, p.parseSetsLiteralShort)
+	p.registerPrefix(token.HASH, p.parseHashLiteral)
 
 	return p
 }
@@ -423,30 +424,18 @@ func (p *Parser) parseArrayLiteral() ast.Expression {
 	return array
 }
 
+
+func (p *Parser) parseSetsLiteralShort() ast.Expression {
+	sets := &ast.SetsLiteral{Token: p.curToken}
+	sets.Elements = p.parseExpressionList(token.RBRACE)
+	return sets
+}
+
 func (p *Parser) parseSetsLiteral() ast.Expression {
 	sets := &ast.SetsLiteral{Token: p.curToken}
 	p.nextToken() // skeep {
 	sets.Elements = p.parseExpressionList(token.RBRACE)
 	return sets
-	/*
-		sets := &ast.SetsLiteral{Token: p.curToken}
-		sets.Elements =[]ast.Expression{}
-		for !p.peekTokenIs(token.RBRACE) {
-			p.nextToken()
-			value := p.parseExpression(LOWEST)
-			if p.curTokenIs(token.COLON) {
-				return nil
-			}
-
-			sets.Elements = append(sets.Elements, value)
-			if !p.peekTokenIs(token.RBRACE) && !p.expectPeek(token.COMMA) {
-				return nil
-			}
-		}
-		if !p.expectPeek(token.RBRACE) {
-			return nil
-		}
-		return sets*/
 }
 
 
@@ -467,10 +456,10 @@ func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 			return nil
 		}
 		return list
-	}
+}
 
 
-	func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 		exp := &ast.IndexExpression{Token: p.curToken, Left: left}
 		p.nextToken()
 		exp.Index = p.parseExpression(LOWEST)
@@ -478,11 +467,12 @@ func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 			return nil
 		}
 		return exp
-	}
+}
 
 
-	func (p *Parser) parseHashLiteral() ast.Expression {
-		hash := &ast.HashLiteral{Token: p.curToken}
+func (p *Parser) parseHashLiteral() ast.Expression {
+	hash := &ast.HashLiteral{Token: p.curToken}
+	p.nextToken() // skeep {
 		hash.Pairs = make(map[ast.Expression]ast.Expression)
 		for !p.peekTokenIs(token.RBRACE) {
 			p.nextToken()

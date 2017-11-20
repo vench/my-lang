@@ -231,7 +231,7 @@ func TestErrorHandling(t *testing.T) {
 			"unknown operator: STRING - STRING",
 		},
 		{
-			`{"name": "Monkey"}[fn(x) { x }];`,
+			`Hash{"name": "Monkey"}[fn(x) { x }];`,
 			"unusable as hash key: FUNCTION",
 		},
 	}
@@ -452,7 +452,7 @@ func TestArrayIndexExpressions(t *testing.T) {
 
 func TestHashLiterals(t *testing.T) {
 	input := `let two = "two";
-{
+HASH{
 "one": 10 - 9,
 two: 1 + 1,
 "thr" + "ee": 6 / 2,
@@ -495,31 +495,31 @@ func TestHashIndexExpressions(t *testing.T) {
 		expected interface{}
 	}{
 		{
-			`{"foo": 5}["foo"]`,
+			`Hash{"foo": 5}["foo"]`,
 			5,
 		},
 		{
-			`{"foo": 5}["bar"]`,
+			`Hash{"foo": 5}["bar"]`,
 			nil,
 		},
 		{
-			`let key = "foo"; {"foo": 5}[key]`,
+			`let key = "foo"; Hash{"foo": 5}[key]`,
 			5,
 		},
 		{
-			`{}["foo"]`,
+			`Hash{}["foo"]`,
 			nil,
 		},
 		{
-			`{5: 5}[5]`,
+			`Hash{5: 5}[5]`,
 			5,
 		},
 		{
-			`{true: 5}[true]`,
+			`Hash{true: 5}[true]`,
 			5,
 		},
 		{
-			`{false: 5}[false]`,
+			`Hash{false: 5}[false]`,
 			5,
 		},
 	}

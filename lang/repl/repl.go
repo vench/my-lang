@@ -8,10 +8,13 @@ import (
 	"../object"
 	"../parser"
 	"../evaluator"
+//	"os"
 )
 
 const MONKEY_FACE = `
-*-*
+*---|---|---|---|---|---|---*
+*---|---|---|---|---|---|---*
+*---|---|---|---|---|---|---*
 `
 
 
@@ -36,6 +39,7 @@ func Start(in io.Reader, out io.Writer) {
 			fmt.Println("show")
 			continue
 		} */
+
 
 
 		line := scanner.Text()

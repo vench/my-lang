@@ -25,6 +25,7 @@ const (
 	ELSE = "ELSE"
 	RETURN = "RETURN"
 	SETS = "SET"
+	HASH = "HASH"
 
 	// Operators
 	ASSIGN = "="
@@ -68,6 +69,10 @@ var keywords = map[string]TokenType{
 	"return": RETURN,
 	"set": SETS,
 	"S": SETS,
+	"HASH": HASH,
+	"hash": HASH,
+	"Hash": HASH,
+	"H": HASH,
 }
 
 func LookupIdent(ident string) TokenType {
