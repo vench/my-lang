@@ -92,7 +92,7 @@ func multSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 			data := new([]object.Object)
 			*data = append(*data, ea, eb)
 
-			*elements = append(*elements, &object.Sets{*data })
+			*elements = append(*elements, &object.Sets{*data, true})
 		}
 
 	}

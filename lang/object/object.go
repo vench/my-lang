@@ -209,18 +209,27 @@ type Hashable interface {
 //Sets
 type Sets struct {
 	Elements []Object
+	Parent bool
 }
 
 func (ao *Sets) Type() ObjectType { return SETS_OBJ }
 
-func (ao *Sets) Inspect() string {
+func (st *Sets) Inspect() string {
 	var out bytes.Buffer
 	elements := []string{}
-	for _, e := range ao.Elements {
+	for _, e := range st.Elements {
 		elements = append(elements, e.Inspect())
 	}
-	out.WriteString("Sets {")
-	out.WriteString(strings.Join(elements, ", "))
-	out.WriteString("}")
+
+	if st.Parent {
+		out.WriteString("(")
+		out.WriteString(strings.Join(elements, ", "))
+		out.WriteString(")")
+	} else {
+		out.WriteString("Sets {")
+		out.WriteString(strings.Join(elements, ", "))
+		out.WriteString("}")
+	}
+
 	return out.String()
 }
