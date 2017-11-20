@@ -8,10 +8,13 @@ import (
 	"../object"
 	"../parser"
 	"../evaluator"
+//	"os"
 )
 
 const MONKEY_FACE = `
-*-*
+*---|---|---|---|---|---|---*
+*---|---|---|---|---|---|---*
+*---|---|---|---|---|---|---*
 `
 
 
@@ -22,12 +25,23 @@ func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()
 
+
 	for {
+
 		fmt.Printf(PROMPT)
 		scanned := scanner.Scan()
 		if !scanned {
 			return
 		}
+/*
+		fmt.Println(string(scanner.Bytes()[0]))
+	    if string(scanner.Bytes()[0]) == "27" {
+			fmt.Println("show")
+			continue
+		} */
+
+
+
 		line := scanner.Text()
 		l := lexer.New(line)
 		p := parser.New(l)

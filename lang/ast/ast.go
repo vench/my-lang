@@ -315,3 +315,25 @@ func (hl *HashLiteral) String() string {
 	out.WriteString("}")
 	return out.String()
 }
+
+//Sets
+type SetsLiteral struct {
+	Token	token.Token // the '{' token
+	Elements []Expression
+}
+
+func (al *SetsLiteral) expressionNode(){}
+
+func (al *SetsLiteral) TokenLiteral() string { return al.Token.Literal }
+
+func (al *SetsLiteral) String() string {
+	var out bytes.Buffer
+	elements := []string{}
+	for _, el := range al.Elements {
+		elements = append(elements, el.String())
+	}
+	out.WriteString("Sets {")
+	out.WriteString(strings.Join(elements, ", "))
+	out.WriteString("}")
+	return out.String()
+}

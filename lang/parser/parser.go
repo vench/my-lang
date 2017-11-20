@@ -6,6 +6,7 @@ import (
 	"../token"
 	"fmt"
 	"strconv"
+	//"hash"
 )
 
 const (
@@ -34,6 +35,9 @@ var precedences = map[token.TokenType]int{
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:	CALL,
 	token.LBRACKET: INDEX,
+	token.BINARY_OR: SUM,
+	token.BINARY_AND: SUM,
+	token.BINARY_SLASH : SUM,
 }
 
 type (
@@ -46,7 +50,7 @@ type Parser struct {
 	curToken	token.Token
 	peekToken token.Token
 	errors []string
-	prefixParseFns map[token.TokenType]prefixParseFn
+	prefixParseFns map[token.TokenType][]prefixParseFn
 	infixParseFns  map[token.TokenType]infixParseFn
 }
 
@@ -55,7 +59,7 @@ func New(l *lexer.Lexer) *Parser {
 	// Read two tokens, so curToken and peekToken are both set
 	p.nextToken()
 	p.nextToken()
-	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.prefixParseFns = make(map[token.TokenType][]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
@@ -63,8 +67,11 @@ func New(l *lexer.Lexer) *Parser {
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
+	p.registerInfix(token.BINARY_OR, p.parseInfixExpression)
+	p.registerInfix(token.BINARY_AND, p.parseInfixExpression)
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
 	p.registerInfix(token.SLASH, p.parseInfixExpression)
+	p.registerInfix(token.BINARY_SLASH, p.parseInfixExpression)
 	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
 	p.registerInfix(token.EQ, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
@@ -81,7 +88,10 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
-	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
+
+	p.registerPrefix(token.SETS, p.parseSetsLiteral)
+	p.registerPrefix(token.LBRACE, p.parseSetsLiteralShort)
+	p.registerPrefix(token.HASH, p.parseHashLiteral)
 
 	return p
 }
@@ -171,8 +181,9 @@ func (p *Parser) peekError(t token.TokenType) {
 }
 
 func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
-	p.prefixParseFns[tokenType] = fn
+	p.prefixParseFns[tokenType] = append(p.prefixParseFns[tokenType], fn)
 }
+
 func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 }
@@ -191,21 +202,30 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	defer untrace(trace("parseExpression"))
 
-	prefix := p.prefixParseFns[p.curToken.Type]
-	if prefix == nil {
+	prefixs := p.prefixParseFns[p.curToken.Type]
+	if len(prefixs) == 0 {
 		p.noPrefixParseFnError(p.curToken.Type)
 		return nil
 	}
-	leftExp := prefix()
-	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
-		infix := p.infixParseFns[p.peekToken.Type]
-		if infix == nil {
-			return leftExp
+	//fmt.Println(p.curToken.Literal)
+	for _,prefix := range  prefixs {
+
+		leftExp := prefix()
+
+		if leftExp == nil {
+			continue
 		}
-		p.nextToken()
-		leftExp = infix(leftExp)
+		for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
+			infix := p.infixParseFns[p.peekToken.Type]
+			if infix == nil {
+				return leftExp
+			}
+			p.nextToken()
+			leftExp = infix(leftExp)
+		}
+		return leftExp
 	}
-	return leftExp
+	return nil
 }
 
 func (p *Parser) parseIdentifier() ast.Expression {
@@ -404,71 +424,87 @@ func (p *Parser) parseArrayLiteral() ast.Expression {
 	return array
 }
 
+
+func (p *Parser) parseSetsLiteralShort() ast.Expression {
+	sets := &ast.SetsLiteral{Token: p.curToken}
+	sets.Elements = p.parseExpressionList(token.RBRACE)
+	return sets
+}
+
+func (p *Parser) parseSetsLiteral() ast.Expression {
+	sets := &ast.SetsLiteral{Token: p.curToken}
+	p.nextToken() // skeep {
+	sets.Elements = p.parseExpressionList(token.RBRACE)
+	return sets
+}
+
+
 func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
-	list := []ast.Expression{}
-	if p.peekTokenIs(end) {
-		p.nextToken()
-		return list
-	}
-	p.nextToken()
-	list = append(list, p.parseExpression(LOWEST))
-	for p.peekTokenIs(token.COMMA) {
-		p.nextToken()
+		list := []ast.Expression{}
+		if p.peekTokenIs(end) {
+			p.nextToken()
+			return list
+		}
 		p.nextToken()
 		list = append(list, p.parseExpression(LOWEST))
-	}
-	if !p.expectPeek(end) {
-		return nil
-	}
-	return list
+		for p.peekTokenIs(token.COMMA) {
+			p.nextToken()
+			p.nextToken()
+			list = append(list, p.parseExpression(LOWEST))
+		}
+		if !p.expectPeek(end) {
+			return nil
+		}
+		return list
 }
 
 
 func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
-	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
-	p.nextToken()
-	exp.Index = p.parseExpression(LOWEST)
-	if !p.expectPeek(token.RBRACKET) {
-		return nil
-	}
-	return exp
+		exp := &ast.IndexExpression{Token: p.curToken, Left: left}
+		p.nextToken()
+		exp.Index = p.parseExpression(LOWEST)
+		if !p.expectPeek(token.RBRACKET) {
+			return nil
+		}
+		return exp
 }
 
 
 func (p *Parser) parseHashLiteral() ast.Expression {
 	hash := &ast.HashLiteral{Token: p.curToken}
-	hash.Pairs = make(map[ast.Expression]ast.Expression)
-	for !p.peekTokenIs(token.RBRACE) {
-		p.nextToken()
-		key := p.parseExpression(LOWEST)
-		if !p.expectPeek(token.COLON) {
+	p.nextToken() // skeep {
+		hash.Pairs = make(map[ast.Expression]ast.Expression)
+		for !p.peekTokenIs(token.RBRACE) {
+			p.nextToken()
+			key := p.parseExpression(LOWEST)
+			if !p.expectPeek(token.COLON) {
+				return nil
+			}
+			p.nextToken()
+			value := p.parseExpression(LOWEST)
+			hash.Pairs[key] = value
+			if !p.peekTokenIs(token.RBRACE) && !p.expectPeek(token.COMMA) {
+				return nil
+			}
+		}
+		if !p.expectPeek(token.RBRACE) {
 			return nil
 		}
-		p.nextToken()
-		value := p.parseExpression(LOWEST)
-		hash.Pairs[key] = value
-		if !p.peekTokenIs(token.RBRACE) && !p.expectPeek(token.COMMA) {
-			return nil
+		return hash
+	}
+
+	// util
+
+	func trace(s string) string  {
+		if showEnteringLeaving {
+			fmt.Println("entering:", s)
+		}
+		return s
+	}
+
+	func untrace(s string) {
+		if showEnteringLeaving {
+			fmt.Println("leaving:", s)
 		}
 	}
-	if !p.expectPeek(token.RBRACE) {
-		return nil
-	}
-	return hash
-}
-
-// util
-
-func trace(s string) string  {
-	if showEnteringLeaving {
-		fmt.Println("entering:", s)
-	}
-	return s
-}
-
-func untrace(s string) {
-	if showEnteringLeaving {
-		fmt.Println("leaving:", s)
-	}
-}
 

@@ -58,14 +58,17 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(node.Operator, left, right)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
+
 	case *ast.LetStatement:
 		val := Eval(node.Value, env)
 		if isError(val) {
 			return val
 		}
 		env.Set(node.Name.Value, val)
+
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
+
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
 
@@ -88,12 +91,14 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
+
 	case *ast.ArrayLiteral:
 		elements := evalExpressions(node.Elements, env)
 		if len(elements) == 1 && isError(elements[0]) {
 			return elements[0]
 		}
 		return &object.Array{Elements: elements}
+
 	case *ast.IndexExpression:
 		left := Eval(node.Left, env)
 		if isError(left) {
@@ -105,6 +110,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return evalIndexExpression(left, index)
 
+	case *ast.SetsLiteral:
+		elements := evalExpressions(node.Elements, env)
+		return &object.Sets{Elements: elements}
 	}
 
 	return nil
@@ -178,6 +186,8 @@ func evalInfixExpression(
 			left.Type(), operator, right.Type())
 	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
 		return evalStringInfixExpression(operator, left, right)
+	case left.Type() == object.SETS_OBJ && right.Type() == object.SETS_OBJ:
+		return evalSetsInfixExpression(operator, left, right)
 	default:
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
@@ -358,6 +368,8 @@ func evalStringInfixExpression(
 	rightVal := right.(*object.String).Value
 	return &object.String{Value: leftVal + rightVal}
 }
+
+
 
 //
 
