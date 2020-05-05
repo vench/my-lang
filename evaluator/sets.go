@@ -1,7 +1,7 @@
 package evaluator
 
 import (
-	"../object"
+	"github.com/vench/my-lang/object"
 )
 
 func evalSetsInfixExpression(operator string,
@@ -11,14 +11,14 @@ func evalSetsInfixExpression(operator string,
 	switch operator {
 	case "+":
 	case "|":
-		return  &object.Sets{Elements: *unionSets(
+		return &object.Sets{Elements: *unionSets(
 			&left.(*object.Sets).Elements,
 			&right.(*object.Sets).Elements,
 		)}
 	case "&":
 		return &object.Sets{Elements: *crossSets(
-		&left.(*object.Sets).Elements,
-		&right.(*object.Sets).Elements,
+			&left.(*object.Sets).Elements,
+			&right.(*object.Sets).Elements,
 		)}
 	case "\\":
 		return &object.Sets{Elements: *diffSets(
@@ -46,7 +46,7 @@ func unionSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 			has[element.Inspect()] = true
 		}
 	}
-	return  elements
+	return elements
 }
 
 func crossSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
@@ -56,10 +56,10 @@ func crossSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 		if count, ok := has[element.Inspect()]; ok && count == 1 {
 			*elements = append(*elements, element)
 		}
-		has[element.Inspect()] ++
+		has[element.Inspect()]++
 	}
 
-	return  elements
+	return elements
 }
 
 func diffSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
@@ -80,9 +80,8 @@ func diffSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 
 	}
 
-	return  elements
+	return elements
 }
-
 
 func multSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 	elements := new([]object.Object)
@@ -92,10 +91,10 @@ func multSets(a *[]object.Object, b *[]object.Object) *[]object.Object {
 			data := new([]object.Object)
 			*data = append(*data, ea, eb)
 
-			*elements = append(*elements, &object.Sets{*data })
+			*elements = append(*elements, &object.Sets{*data})
 		}
 
 	}
 
-	return  elements
+	return elements
 }

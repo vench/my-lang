@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/vench/my-lang/repl"
 	"os"
 	"os/user"
-	"./lang/repl"
 )
+
 func main() {
 	user, err := user.Current()
 	if err != nil {

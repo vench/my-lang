@@ -3,12 +3,12 @@ package repl
 import (
 	"bufio"
 	"fmt"
+	"github.com/vench/my-lang/evaluator"
+	"github.com/vench/my-lang/lexer"
+	"github.com/vench/my-lang/object"
+	"github.com/vench/my-lang/parser"
 	"io"
-	"../lexer"
-	"../object"
-	"../parser"
-	"../evaluator"
-//	"os"
+	//	"os"
 )
 
 const MONKEY_FACE = `
@@ -17,14 +17,11 @@ const MONKEY_FACE = `
 *---|---|---|---|---|---|---*
 `
 
-
 const PROMPT = ">> "
-
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()
-
 
 	for {
 
@@ -33,14 +30,12 @@ func Start(in io.Reader, out io.Writer) {
 		if !scanned {
 			return
 		}
-/*
-		fmt.Println(string(scanner.Bytes()[0]))
-	    if string(scanner.Bytes()[0]) == "27" {
-			fmt.Println("show")
-			continue
-		} */
-
-
+		/*
+				fmt.Println(string(scanner.Bytes()[0]))
+			    if string(scanner.Bytes()[0]) == "27" {
+					fmt.Println("show")
+					continue
+				} */
 
 		line := scanner.Text()
 		l := lexer.New(line)

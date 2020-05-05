@@ -1,10 +1,9 @@
 package lexer
 
 import (
-	"testing"
 	"../token"
+	"testing"
 )
-
 
 func TestNextToken(t *testing.T) {
 	input := `let five = 5;
@@ -32,7 +31,7 @@ set{1, 2, 4} & set{1, 2, 4}
 `
 
 	tests := []struct {
-		expectedType token.TokenType
+		expectedType    token.TokenType
 		expectedLiteral string
 	}{
 		{token.LET, "let"},
@@ -115,7 +114,6 @@ set{1, 2, 4} & set{1, 2, 4}
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
 
-
 		{token.STRING, "foobar"},
 		{token.STRING, "foo bar"},
 		{token.LBRACKET, "["},
@@ -178,8 +176,6 @@ set{1, 2, 4} & set{1, 2, 4}
 		{token.RBRACE, "}"},
 
 		{token.EOF, ""},
-
-
 	}
 	l := New(input)
 

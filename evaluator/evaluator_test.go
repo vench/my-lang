@@ -1,15 +1,15 @@
 package evaluator
 
-
 import (
 	"../lexer"
 	"../object"
 	"../parser"
 	"testing"
 )
+
 func TestEvalIntegerExpression(t *testing.T) {
 	tests := []struct {
-		input		string
+		input    string
 		expected int64
 	}{
 		{"5", 5},
@@ -59,7 +59,7 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 //
 func TestEvalBooleanExpression(t *testing.T) {
 	tests := []struct {
-		input		string
+		input    string
 		expected bool
 	}{
 		{"true", true},
@@ -104,7 +104,7 @@ func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 //
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
-		input		string
+		input    string
 		expected bool
 	}{
 		{"!true", false},
@@ -123,7 +123,7 @@ func TestBangOperator(t *testing.T) {
 //
 func TestReturnStatements(t *testing.T) {
 	tests := []struct {
-		input		string
+		input    string
 		expected int64
 	}{
 		{"return 10;", 10},
@@ -148,11 +148,10 @@ func TestReturnStatements(t *testing.T) {
 	}
 }
 
-
 //
 func TestIfElseExpressions(t *testing.T) {
 	tests := []struct {
-		input		string
+		input    string
 		expected interface{}
 	}{
 		{"if (true) { 10 }", 10},
@@ -184,7 +183,7 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 //
 func TestErrorHandling(t *testing.T) {
 	tests := []struct {
-		input string
+		input           string
 		expectedMessage string
 	}{
 		{
@@ -253,7 +252,7 @@ func TestErrorHandling(t *testing.T) {
 //
 func TestLetStatements(t *testing.T) {
 	tests := []struct {
-		input		string
+		input    string
 		expected int64
 	}{
 		{"let a = 5; a;", 5},
@@ -265,7 +264,6 @@ func TestLetStatements(t *testing.T) {
 		testIntegerObject(t, testEval(tt.input), tt.expected)
 	}
 }
-
 
 //
 func TestFunctionObject(t *testing.T) {
@@ -291,7 +289,7 @@ func TestFunctionObject(t *testing.T) {
 //
 func TestFunctionApplication(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected int64
 	}{
 		{"let identity = fn(x) { x; }; identity(5);", 5},
@@ -315,7 +313,6 @@ let addTwo = newAdder(2);
 addTwo(2);`
 	testIntegerObject(t, testEval(input), 4)
 }
-
 
 func TestStringLiteral(t *testing.T) {
 	input := `"Hello World!"`
@@ -343,7 +340,7 @@ func TestStringConcatenation(t *testing.T) {
 
 func TestBuiltinFunctions(t *testing.T) {
 	tests := []struct {
-		input 		string
+		input    string
 		expected interface{}
 	}{
 		{`len("")`, 0},
@@ -388,12 +385,11 @@ func TestArrayLiterals(t *testing.T) {
 	testIntegerObject(t, result.Elements[2], 6)
 }
 
-
 //
 
 func TestArrayIndexExpressions(t *testing.T) {
 	tests := []struct {
-		input		string
+		input    string
 		expected interface{}
 	}{
 		{
@@ -466,12 +462,12 @@ false: 6
 		t.Fatalf("Eval didn't return Hash. got=%T (%+v)", evaluated, evaluated)
 	}
 	expected := map[object.HashKey]int64{
-		(&object.String{Value: "one"}).HashKey(): 1,
-		(&object.String{Value: "two"}).HashKey(): 2,
+		(&object.String{Value: "one"}).HashKey():   1,
+		(&object.String{Value: "two"}).HashKey():   2,
 		(&object.String{Value: "three"}).HashKey(): 3,
-		(&object.Integer{Value: 4}).HashKey(): 4,
-		TRUE.HashKey(): 5,
-		FALSE.HashKey(): 6,
+		(&object.Integer{Value: 4}).HashKey():      4,
+		TRUE.HashKey():                             5,
+		FALSE.HashKey():                            6,
 	}
 	if len(result.Pairs) != len(expected) {
 		t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
@@ -485,13 +481,11 @@ false: 6
 	}
 }
 
-
 ///
-
 
 func TestHashIndexExpressions(t *testing.T) {
 	tests := []struct {
-		input		string
+		input    string
 		expected interface{}
 	}{
 		{
@@ -534,33 +528,31 @@ func TestHashIndexExpressions(t *testing.T) {
 	}
 }
 
-
 //Sets
 
-
 func TestSetsLiterals(t *testing.T) {
-/*	input := `S{1,2,3} + S{2,3,4}`
-	evaluated := testEval(input)
-	result, ok := evaluated.(*object.Sets)
-	if !ok {
-		t.Fatalf("Eval didn't return Sets. got=%T (%+v)", evaluated, evaluated)
-	}
-	expected := map[object.HashKey]int64{
-		(&object.String{Value: "one"}).HashKey(): 1,
-		(&object.String{Value: "two"}).HashKey(): 2,
-		(&object.String{Value: "three"}).HashKey(): 3,
-		(&object.Integer{Value: 4}).HashKey(): 4,
-		TRUE.HashKey(): 5,
-		FALSE.HashKey(): 6,
-	}
-	if len(result.Pairs) != len(expected) {
-		t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
-	}
-	for expectedKey, expectedValue := range expected {
-		pair, ok := result.Pairs[expectedKey]
+	/*	input := `S{1,2,3} + S{2,3,4}`
+		evaluated := testEval(input)
+		result, ok := evaluated.(*object.Sets)
 		if !ok {
-			t.Errorf("no pair for given key in Pairs")
+			t.Fatalf("Eval didn't return Sets. got=%T (%+v)", evaluated, evaluated)
 		}
-		testIntegerObject(t, pair.Value, expectedValue)
-	}*/
+		expected := map[object.HashKey]int64{
+			(&object.String{Value: "one"}).HashKey(): 1,
+			(&object.String{Value: "two"}).HashKey(): 2,
+			(&object.String{Value: "three"}).HashKey(): 3,
+			(&object.Integer{Value: 4}).HashKey(): 4,
+			TRUE.HashKey(): 5,
+			FALSE.HashKey(): 6,
+		}
+		if len(result.Pairs) != len(expected) {
+			t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
+		}
+		for expectedKey, expectedValue := range expected {
+			pair, ok := result.Pairs[expectedKey]
+			if !ok {
+				t.Errorf("no pair for given key in Pairs")
+			}
+			testIntegerObject(t, pair.Value, expectedValue)
+		}*/
 }

@@ -1,8 +1,8 @@
 package evaluator
 
 import (
-	"../object"
 	"fmt"
+	"github.com/vench/my-lang/object"
 )
 
 var builtins = map[string]*object.Builtin{
@@ -115,7 +115,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 	//codes
-	"tcode" : &object.Builtin{
+	"tcode": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 
 			const sample = "\xbd\xb2\x3d\xbc\x20\xe2\x8c\x98   xEF"
@@ -125,5 +125,3 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 }
-
-

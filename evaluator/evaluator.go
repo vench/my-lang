@@ -1,22 +1,21 @@
 package evaluator
 
 import (
-	"../ast"
-	"../object"
 	"fmt"
+	"github.com/vench/my-lang/ast"
+	"github.com/vench/my-lang/object"
 )
 
-var (//consts ?
-	TRUE = &object.Boolean{Value: true}
+var ( //consts ?
+	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
-	NULL = &object.Null{}
+	NULL  = &object.Null{}
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
 
-
 	switch node := node.(type) {
-		//Return
+	//Return
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue, env)
 		if isError(val) {
@@ -257,15 +256,15 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 }
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
-	condition := Eval(ie.Condition,env)
+	condition := Eval(ie.Condition, env)
 	if isError(condition) {
 		return condition
 	}
 
 	if isTruthy(condition) {
-		return Eval(ie.Consequence,env)
+		return Eval(ie.Consequence, env)
 	} else if ie.Alternative != nil {
-		return Eval(ie.Alternative,env)
+		return Eval(ie.Alternative, env)
 	} else {
 		return NULL
 	}
@@ -369,8 +368,6 @@ func evalStringInfixExpression(
 	return &object.String{Value: leftVal + rightVal}
 }
 
-
-
 //
 
 func evalIndexExpression(left, index object.Object) object.Object {
@@ -384,7 +381,6 @@ func evalIndexExpression(left, index object.Object) object.Object {
 	}
 }
 
-
 func evalArrayIndexExpression(array, index object.Object) object.Object {
 	arrayObject := array.(*object.Array)
 	idx := index.(*object.Integer).Value
@@ -394,7 +390,6 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 	}
 	return arrayObject.Elements[idx]
 }
-
 
 func evalHashLiteral(
 	node *ast.HashLiteral,
@@ -419,7 +414,6 @@ func evalHashLiteral(
 	}
 	return &object.Hash{Pairs: pairs}
 }
-
 
 func evalHashIndexExpression(hash, index object.Object) object.Object {
 	hashObject := hash.(*object.Hash)

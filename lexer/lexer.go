@@ -1,12 +1,12 @@
 package lexer
 
-import "../token"
+import "github.com/vench/my-lang/token"
 
 type Lexer struct {
-	input string
-	position int
+	input        string
+	position     int
 	readPosition int
-	ch	byte // current char under examination
+	ch           byte // current char under examination
 }
 
 func New(input string) *Lexer {
@@ -14,7 +14,6 @@ func New(input string) *Lexer {
 	l.readChar()
 	return l
 }
-
 
 func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.input) {
@@ -25,7 +24,6 @@ func (l *Lexer) readChar() {
 	l.position = l.readPosition
 	l.readPosition += 1
 }
-
 
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
@@ -110,7 +108,6 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
-
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
@@ -120,7 +117,7 @@ func (l *Lexer) readString() string {
 	for {
 		l.readChar()
 
-	 	if l.ch == '"' || l.ch == 0 {
+		if l.ch == '"' || l.ch == 0 {
 			break
 		}
 	}
@@ -156,7 +153,6 @@ func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
 }
 
-
 func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0
@@ -164,4 +160,3 @@ func (l *Lexer) peekChar() byte {
 		return l.input[l.readPosition]
 	}
 }
-
